@@ -125,7 +125,7 @@ CGFloat const kBurgerButtonHeight = 50.0;
             [UIView animateWithDuration:kTimeToSlideMenu animations:^{
                 self.topViewController.view.center = CGPointMake(self.view.center.x * kBurgerOpenScreenMultiple, self.view.center.y);
             } completion:^(BOOL finished) {
-                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapToCloseMenu)];
+                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapToCloseMenu:)];
                 
                 [self.topViewController.view addGestureRecognizer:tap];
                 
@@ -154,38 +154,33 @@ CGFloat const kBurgerButtonHeight = 50.0;
     [UIView animateWithDuration:kTimeToSlideMenu animations:^{
         __strong typeof(weakSelf) strongSelf = weakSelf;
         
-        self.topViewController.view.frame = CGRectMake(strongSelf.view.frame.size.width, strongSelf.view.frame.origin.y, strongSelf.topViewController.view.frame.size.width, strongSelf.topViewController.view.frame.size.height);
+        strongSelf.topViewController.view.frame = CGRectMake(strongSelf.view.frame.size.width, strongSelf.view.frame.origin.y, strongSelf.topViewController.view.frame.size.width, strongSelf.topViewController.view.frame.size.height);
     } completion:^(BOOL finished) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         
-        CGRect oldFrame = self.topViewController.view.frame; // offscreen position
-        [strongSelf.topViewController willMoveToParent:nil];
+        CGRect oldFrame = strongSelf.topViewController.view.frame; // offscreen position
+        
+        [strongSelf.topViewController willMoveToParentViewController:nil];
         [strongSelf.topViewController.view removeFromSuperview];
         [strongSelf.topViewController removeFromParentViewController];
         
         [strongSelf addChildViewController:newTopViewController];
-        
         newTopViewController.view.frame = oldFrame;
-        [strongSelf.view.addSubView:newTopViewController.view];
+        [strongSelf.view addSubview:newTopViewController.view]; //
         [newTopViewController didMoveToParentViewController:strongSelf];
         strongSelf.topViewController = newTopViewController;
         
         [strongSelf.burgerButton removeFromSuperview];
         [strongSelf.topViewController.view addSubview:strongSelf.burgerButton];
         
-        //                [UIView animateWithDuration:kTimeToSlideMenu animations:^{
-        //                    strongSelf.newTopViewController.view.center = strongSelf.view.center;
-        //        } completion:^(BOOL finished) {
-        //            [strongSelf.topViewController.view addGestureRecognizer:strongSelf.panRecognizer];
-        //            strongSelf._burgerButton.userIneractionDisabled;
-        //        }
-        //        }];
-        //
+        [UIView animateWithDuration:kTimeToSlideMenu animations:^{
+            strongSelf.topViewController.view.center = strongSelf.view.center;
+        } completion:^(BOOL finished) {
+            [strongSelf.topViewController.view addGestureRecognizer:strongSelf.panRecognizer];
+            strongSelf.burgerButton.userInteractionEnabled = YES;
+        }];
     }];
 }
-
-
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
